@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 int betting (int money, int bet)          /*Através desta função é verificado se o utilizador tem créditos suficientes para fazer a aposta que pretende, e, caso os tenha, subtrai o valor ao número de créditos e guarda o valor da aposta*/
-{           
+{
   if (bet <= money) {
     money = money - bet;
     printf("Balance : %d $ \n", money);
@@ -28,6 +28,9 @@ int menu (int money, int bet)          /*Esta função apresenta ao utilizador u
   printf("n - Bet on a specific number - pays 35 to 1\n");
   printf("o - Bet on an odd number - pays 2 to 1\n");
   printf("e - Bet on an even number - pays 2 to 1\n");
+  printf("a - Go all-in on a specific number - pays 35 to 1\n");
+  printf("v - Go all-in on odd numbers - pays 2 to 1\n");
+  printf("m - Go all-in on even numbers - pays 2 to 1\n");
   printf("b - Show balance\n");
   printf("h - Help\n");
   printf("c - Cashout and go home!\n");
@@ -51,7 +54,7 @@ int delay(int random)         /*Com esta função, o valor gerado aleatoriamente
     sleep(1);
 
     printf("1\n");
-    
+
     sleep(1);
 
     printf("The number is... %d!\n", random);
@@ -88,7 +91,7 @@ int main()
                 printf("What do you wanna do: ");
                 scanf("%s", &choose);             /*Aqui é verificada a escolha do utilizador, das escolhas disponíveis na lista de comandos*/
                 switch (choose) {
-                    case 'n': {                   /*Opção para apostar num número específico*/    
+                    case 'n': {                   /*Opção para apostar num número específico*/
                         int number;
                         printf("Balance: %d $ \n", money);
                         printf("Place your bet: ");
@@ -120,7 +123,7 @@ int main()
                             else {
                                 printf("That's not an option!\n");    /*Caso o utilizador escolha apostar num número fora do intervalo possível*/
                                 money = money + bet;
-                            }   
+                            }
                         }
                         else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
                             printf("You can't bet without any money!\n");
@@ -188,10 +191,110 @@ int main()
                     }
                     break;
 
+                    case 'a': {
+                        bet = money;
+                        printf("You're going all in on a specific number!");
+                        int number;
+                        if (bet > 0){
+                            money = betting (money, bet);
+                            printf("Which number will you choose?\n");
+                            scanf("%d",&number);
+                            if (number <= 36 && number >= 1) {
+                                printf("It's time to roll!\n");
+                                srand((unsigned int) time(NULL));{
+                                    random = rand() % (36 - 0 + 1) + 0;
+                                    delay(random);
+                                    if (number == random) {       /*Vitória do utilizador*/
+                                        printf("You won!\n");
+                                        money = money + (35 * bet);
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else if (random == 0) {       /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else {
+                                        printf("You lost!\n");    /*Número diferente do escolhido pelo utilizador = derrota*/
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                }
+                            }
+                            else {
+                                printf("That's not an option!\n");    /*Caso o utilizador escolha apostar num número fora do intervalo possível*/
+                                money = money + bet;
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'v': {
+                        printf("You're going all-in on odd numbers!");
+                        bet = money;
+                        if (bet > 0){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {    /*Número gerado é par, derrota do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else {       /*Número gerado é ímpar, vitória do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {    /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'm': {
+                        printf("You're going all-in on even numbers!");
+                        bet = money;
+                        if (bet > 0){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {   /*Número gerado é par, vitória do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else if (random == 0) {    /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                }
+                                else {   /*Número gerado é ímpar, derrota do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
                     case 'h':  /*Apresenta a lista de comandos de novo*/
                         printf("n - Bet on a specific number - pays 35 to 1\n");
                         printf("o - Bet on an odd number - pays 2 to 1\n");
                         printf("e - Bet on an even number - pays 2 to 1\n");
+                        printf("a - Go all-in on a specific number - pays 35 to 1\n");
+                        printf("v - Go all-in on odd numbers - pays 2 to 1\n");
+                        printf("m - Go all-in on even numbers - pays 2 to 1\n");
                         printf("b - Show balance\n");
                         printf("c - Cashout and go home!\n");
                     break;
@@ -228,7 +331,7 @@ int main()
                 printf("What do you wanna do: ");
                 scanf("%s",&choose);
                 switch (choose) {
-                    case 'n': {     /*Opção para apostar num número específico*/ 
+                    case 'n': {     /*Opção para apostar num número específico*/
                         int number;
                         printf("Balance: %d $ \n", money);
                         printf("Place your bet: ");
@@ -277,7 +380,7 @@ int main()
                             srand((unsigned int) time(NULL));{
                                 random = rand() % (36 - 0 + 1) + 0;
                                 delay(random);
-                                if (random % 2 == 0) {     /*Número gerado é par, derrota do utilizador*/     
+                                if (random % 2 == 0) {     /*Número gerado é par, derrota do utilizador*/
                                     printf("The number is even!\n");
                                     printf("You lost!\n");
                                     printf("Balance: %d $\n", money);
@@ -328,10 +431,110 @@ int main()
                     }
                     break;
 
+                    case 'a': {
+                        bet = money;
+                        printf("You're going all in on a specific number!");
+                        int number;
+                        if (bet > 10){
+                            money = betting (money, bet);
+                            printf("Which number will you choose?\n");
+                            scanf("%d",&number);
+                            if (number <= 36 && number >= 1) {
+                                printf("It's time to roll!\n");
+                                srand((unsigned int) time(NULL));{
+                                    random = rand() % (36 - 0 + 1) + 0;
+                                    delay(random);
+                                    if (number == random) {       /*Vitória do utilizador*/
+                                        printf("You won!\n");
+                                        money = money + (35 * bet);
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else if (random == 0) {       /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else {
+                                        printf("You lost!\n");    /*Número diferente do escolhido pelo utilizador = derrota*/
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                }
+                            }
+                            else {
+                                printf("That's not an option!\n");    /*Caso o utilizador escolha apostar num número fora do intervalo possível*/
+                                money = money + bet;
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'v': {
+                        printf("You're going all-in on odd numbers!");
+                        bet = money;
+                        if (bet > 10){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {    /*Número gerado é par, derrota do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else {       /*Número gerado é ímpar, vitória do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {    /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'm': {
+                        printf("You're going all-in on even numbers!");
+                        bet = money;
+                        if (bet > 10){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {   /*Número gerado é par, vitória do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else if (random == 0) {    /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                }
+                                else {   /*Número gerado é ímpar, derrota do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
                     case 'h':    /*Apresenta a lista de comandos de novo*/
                         printf("n - Bet on a specific number - pays 35 to 1\n");
                         printf("o - Bet on an odd number - pays 2 to 1\n");
                         printf("e - Bet on an even number - pays 2 to 1\n");
+                        printf("a - Go all-in on a specific number - pays 35 to 1\n");
+                        printf("v - Go all-in on odd numbers - pays 2 to 1\n");
+                        printf("m - Go all-in on even numbers - pays 2 to 1\n");
                         printf("b - Show balance\n");
                         printf("c - Cashout and go home!\n");
                     break;
@@ -368,7 +571,7 @@ int main()
                 printf("What do you wanna do: ");
                 scanf("%s", &choose);    /*Aqui é verificada a escolha do utilizador, das escolhas disponíveis na lista de comandos*/
                 switch (choose) {
-                    case 'n': {    /*Opção para apostar num número específico*/ 
+                    case 'n': {    /*Opção para apostar num número específico*/
                         int number;
                         printf("Balance: %d $ \n", money);
                         printf("Place your bet: ");
@@ -468,10 +671,110 @@ int main()
                     }
                     break;
 
+                    case 'a': {
+                        bet = money;
+                        printf("You're going all in on a specific number!");
+                        int number;
+                        if (bet > 20){
+                            money = betting (money, bet);
+                            printf("Which number will you choose?\n");
+                            scanf("%d",&number);
+                            if (number <= 36 && number >= 1) {
+                                printf("It's time to roll!\n");
+                                srand((unsigned int) time(NULL));{
+                                    random = rand() % (36 - 0 + 1) + 0;
+                                    delay(random);
+                                    if (number == random) {       /*Vitória do utilizador*/
+                                        printf("You won!\n");
+                                        money = money + (35 * bet);
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else if (random == 0) {       /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                    else {
+                                        printf("You lost!\n");    /*Número diferente do escolhido pelo utilizador = derrota*/
+                                        printf("Balance: %d $ \n", money);
+                                    }
+                                }
+                            }
+                            else {
+                                printf("That's not an option!\n");    /*Caso o utilizador escolha apostar num número fora do intervalo possível*/
+                                money = money + bet;
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'v': {
+                        printf("You're going all-in on odd numbers!");
+                        bet = money;
+                        if (bet > 20){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {    /*Número gerado é par, derrota do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else {       /*Número gerado é ímpar, vitória do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {    /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
+                    case 'm': {
+                        printf("You're going all-in on even numbers!");
+                        bet = money;
+                        if (bet > 20){
+                            money = betting (money, bet);
+                            srand((unsigned int) time(NULL));{
+                                random = rand() % (36 - 0 + 1) + 0;
+                                delay(random);
+                                if (random % 2 == 0) {   /*Número gerado é par, vitória do utilizador*/
+                                    printf("The number is even!\n");
+                                    printf("You won!\n");
+                                    money = money + (bet * 2);
+                                    printf("Balance: %d $\n", money);
+                                }
+                                else if (random == 0) {    /*Número da casa: a casa ganha automaticamente*/
+                                        printf("You lost!\n");
+                                        printf("Balance: %d $ \n", money);
+                                }
+                                else {   /*Número gerado é ímpar, derrota do utilizador*/
+                                    printf("The number is odd!\n");
+                                    printf("You lost!\n");
+                                    printf("Balance: %d $\n", money);
+                                }
+                            }
+                        }
+                        else if (bet <= 0) {     /*Caso o utilizador tente apostar um valor abaixo do definido pelo nível de dificuldade*/
+                            printf("You can't bet without any money!\n");
+                        }
+                    }
+                    break;
+
                     case 'h':   /*Apresenta a lista de comandos de novo*/
                         printf("n - Bet on a specific number - pays 35 to 1\n");
                         printf("o - Bet on an odd number - pays 2 to 1\n");
                         printf("e - Bet on an even number - pays 2 to 1\n");
+                        printf("a - Go all-in on a specific number - pays 35 to 1\n");
+                        printf("v - Go all-in on odd numbers - pays 2 to 1\n");
+                        printf("m - Go all-in on even numbers - pays 2 to 1\n");
                         printf("b - Show balance\n");
                         printf("c - Cashout and go home!\n");
                     break;
